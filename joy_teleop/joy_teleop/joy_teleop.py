@@ -179,10 +179,15 @@ class JoyTeleop(Node):
 
     def match_command(self, c, buttons):
         """Find a command matching a joystick configuration."""
-        if len(buttons) == 0 or len(self.command_list[c]['buttons']) == 0 or \
-           len(buttons) <= max(self.command_list[c]['buttons']):
+        cmd = self.command_list[c]
+        if len(buttons) == 0 or len(cmd['buttons']) == 0 or \
+           len(buttons) <= max(cmd['buttons']):
             return False
-        return any(buttons[cmd_button] for cmd_button in self.command_list[c]['buttons'])
+        if "match" in cmd and cmd["match"] == "all":
+            f = all
+        else:
+            f = any
+        return f(buttons[cmd_button] for cmd_button in cmd['buttons'])
 
     def add_command(self, name, command):
         """Add a command to the command list."""
